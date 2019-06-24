@@ -74,7 +74,7 @@ class Redis implements Adapter
         $this->openConnection();
         $metrics = $this->collectHistograms() ?? [];
         $metrics = array_merge($metrics, ($this->collectGauges() ?? []));
-        $metrics = array_merge($metrics, ($this->collectCounters() []));
+        $metrics = array_merge($metrics, ($this->collectCounters() ?? []));
         return array_map(
             function (array $metric) {
                 return new MetricFamilySamples($metric);
