@@ -72,9 +72,9 @@ class Redis implements Adapter
     public function collect()
     {
         $this->openConnection();
-        $metrics = $this->collectHistograms();
-        $metrics = array_merge($metrics, $this->collectGauges());
-        $metrics = array_merge($metrics, $this->collectCounters());
+        $metrics = $this->collectHistograms() ?? [];
+        $metrics = array_merge($metrics, ($this->collectGauges() ?? []));
+        $metrics = array_merge($metrics, ($this->collectCounters() []));
         return array_map(
             function (array $metric) {
                 return new MetricFamilySamples($metric);
@@ -209,7 +209,7 @@ LUA
     private function collectHistograms()
     {
         $keys = $this->redis->sMembers(self::$prefix . Histogram::TYPE . self::PROMETHEUS_METRIC_KEYS_SUFFIX);
-        if($keys == false) {
+        if($keys === false) {
             return [];
         }
         sort($keys);
@@ -286,7 +286,7 @@ LUA
     private function collectGauges()
     {
         $keys = $this->redis->sMembers(self::$prefix . Gauge::TYPE . self::PROMETHEUS_METRIC_KEYS_SUFFIX);
-        if($keys == false) {
+        if($keys === false) {
             return [];
         }
         sort($keys);
@@ -315,7 +315,7 @@ LUA
     private function collectCounters()
     {
         $keys = $this->redis->sMembers(self::$prefix . Counter::TYPE . self::PROMETHEUS_METRIC_KEYS_SUFFIX);
-        if($keys == false) {
+        if($keys === false) {
             return [];
         }
         sort($keys);
